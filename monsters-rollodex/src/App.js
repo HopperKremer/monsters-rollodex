@@ -1,5 +1,7 @@
 import React from "react";
-import { SearchBox } from "./search-box/search-box.component";
+import { CardList } from "./components/card-list/card-list.component";
+import { SearchBox } from "./components/search-box/search-box.component";
+import "./App.css";
 
 class App extends React.Component {
   constructor() {
@@ -10,23 +12,29 @@ class App extends React.Component {
     };
   }
 
+  componentDidMount() {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((users) => this.setState({ monsters: users }));
+  }
+
+  onSearchChange = event => {
+    this.setState({searchField: event.target.value})
+  }
+
   render() {
+    //Object Destructuring
+    const { monsters, searchField } = this.state;
+    console.log(searchField)
+
+    const filteredMonsters = monsters.filter((monster) =>
+      monster.name.toLowerCase().includes(searchField)
+    );
     return (
       <div>
         <h1>Monster's Rollodex</h1>
-        <SearchBox />{" "}
-        <div className="card-list">
-          <div className="card-container">
-            <img
-              alt="monster"
-              src="https://robohash.org/1?set=set2&size=180x180"
-            />
-            <h2 Monster Name>
-              Monster Name
-            </h2>
-            <p>Email</p>
-          </div>
-        </div>
+        <SearchBox onSearchChange = {this.onSearchChange} />
+        <CardList monsters={filteredMonsters} />
       </div>
     );
   }
